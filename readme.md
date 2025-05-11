@@ -19,13 +19,24 @@ mellowship/todo/
 ├── fastapi/              # Backend (FastAPI)
 │   ├── app/              # API logic, models, routes
 │   ├── main.py           # Entry point for the server
-│   
 ├── react/todo-frontend/  # Frontend (React)
 │   ├── src/              # All React components and pages
 │   ├── index.html        # Root HTML
-│   
 
 ````
+
+---
+
+## 🛢️ Start PostgreSQL with Docker
+
+```bash
+docker run --name postgres \
+  -e POSTGRES_PASSWORD=jeev@123 \
+  -p 5432:5432 \
+  -d postgres
+````
+
+This will run a PostgreSQL container with password `jeev@123`.
 
 ---
 
@@ -33,8 +44,8 @@ mellowship/todo/
 
 ### ✅ Requirements
 
-- Python 3.9+
-- PostgreSQL (or SQLite for testing)
+* Python 3.9+
+* PostgreSQL running on port `5432`
 
 ### ▶️ Running Locally
 
@@ -44,9 +55,16 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload
-````
+```
 
-Make sure your `.env` has the correct DB and JWT settings.
+Ensure your `.env` has the correct DB URL:
+
+```env
+DATABASE_URL=postgresql://postgres:jeev@123@localhost:5432/postgres
+SECRET_KEY=your_jwt_secret
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
 
 ---
 
@@ -65,14 +83,14 @@ npm install
 npm run dev
 ```
 
-The app runs on `http://localhost:5173` by default.
+App runs on `http://localhost:5173`.
 
-Update `axios` base URL in `axiosInstance.js` to point to your backend:
+Update `axiosInstance.js` with your backend base URL:
 
 ```js
 // axiosInstance.js
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000", // Adjust as needed
+  baseURL: "http://localhost:8000", // FastAPI backend
 });
 ```
 
@@ -84,7 +102,7 @@ const axiosInstance = axios.create({
 * 🗃️ Create, edit, delete todos
 * ⏰ Filter by due time/status
 * 🎨 Styled with Tailwind CSS
-* 📦 Built with Vite for fast frontend dev
+* ⚡ Vite for fast frontend dev
 
 ---
 
