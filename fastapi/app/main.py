@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from app.database import create_db_and_tables
-from app.routers import auth, todos
+from app.db.database import create_db_and_tables
+from app.routes import include_routes
 
 # Load environment variables
 load_dotenv()
@@ -13,9 +13,9 @@ app = FastAPI(title="Todo API")
 
 # Configure CORS
 origins = [
-    "http://localhost:5173",   # Vite React frontend default port
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://localhost:3000",   # (optional, if using different port)
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
@@ -28,14 +28,11 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth.router)
-app.include_router(todos.router)
-
+include_routes(app)
 
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
-
 
 @app.get("/")
 def root():

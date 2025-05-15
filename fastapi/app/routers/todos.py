@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 
 from app.dependencies import SessionDep, get_current_active_user
-from app.models import Todo, TodoCreate, TodoUpdate, UserInDB
+from app.db.models import Todo, TodoCreate, TodoUpdate, UserInDB
 
 router = APIRouter(
     prefix="/todos",

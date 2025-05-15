@@ -9,8 +9,8 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from sqlmodel import Session, select
 
-from app.database import get_session
-from app.models import UserInDB, TokenData
+from app.db.database import get_session
+from app.db.models import UserInDB, TokenData
 from dotenv import load_dotenv
 load_dotenv()
 # Security configuration

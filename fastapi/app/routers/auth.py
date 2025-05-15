@@ -9,7 +9,7 @@ from app.dependencies import (
     SessionDep, authenticate_user, get_password_hash,
     create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 )
-from app.models import User, UserIn, UserInDB, Token
+from app.db.models import User, UserIn, UserInDB, Token
 from sqlmodel import select
 
 router = APIRouter(tags=["authentication"])
