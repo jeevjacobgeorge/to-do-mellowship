@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head><title>FastAPI Chat</title></head>
+<body>
+    <h1>Chat Room</h1>
+    <input id="messageInput" type="text" autocomplete="off"/>
+    <button onclick="sendMessage()">Send</button>
+    <ul id="messages"></ul>
+
+    <script>
+      const client_id = prompt("Enter your name or ID:");
+
+      const ws = new WebSocket(`ws://localhost:8000/ws/chat/${client_id}`);
+
+      ws.onmessage = function(event) {
+            const messages = document.getElementById("messages");
+            const message = document.createElement("li");
+            message.textContent = event.data;
+            messages.appendChild(message);
+      };
+
+      function sendMessage() {
+            const input = document.getElementById("messageInput");
+            ws.send(input.value);
+            input.value = '';
+      }
+    </script>
+</body>
+</html>
