@@ -1,6 +1,7 @@
 import os
 import urllib.parse
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import SQLModel, create_engine, Session, select
+from app.db.models import UserInDB
 
 # Database configuration
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
@@ -21,3 +22,10 @@ def create_db_and_tables():
 def get_session():
     with Session(engine) as session:
         yield session
+
+
+def get_user_by_username(username: str) -> UserInDB | None:
+    with Session(engine) as session:
+        statement = select(UserInDB).where(UserInDB.username == username)
+        result = session.exec(statement).first()
+        return result

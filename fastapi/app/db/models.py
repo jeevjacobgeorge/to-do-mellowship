@@ -26,6 +26,8 @@ class UserInDB(User,table=True):
     username:str = Field(primary_key=True)
     hashed_password: str
     todos:list["Todo"] = Relationship(back_populates="owner")
+
+    
 class TodoCreate(BaseModel):
     title: str
     description: Optional[str] = None

@@ -3,7 +3,7 @@ from typing import Dict
 import jwt
 from app.dependencies import SECRET_KEY
 from app.db.models import UserInDB
-
+from app.db.database import get_user_by_username
 router = APIRouter(
     prefix="/ws",
     tags=["websocket"],
@@ -29,13 +29,13 @@ class ConnectionManager:
                 print(f"Error sending message: {e}")
 
 # JWT decoder to get the user
-def decode_token(token: str) -> UserInDB:
+def decode_token(token: str) -> str:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         username: str = payload.get("sub")
         if not username:
             raise ValueError("Username missing in token")
-        return UserInDB(username=username)
+        return username
     except jwt.PyJWTError as e:
         raise ValueError(f"Token decode error: {e}")
 
@@ -50,21 +50,24 @@ async def websocket_endpoint(websocket: WebSocket):
         print("Connection rejected: token not provided")
         return
     try:
-        user = decode_token(token)
+        username = decode_token(token)
+        user = get_user_by_username(username)
+        if not user:
+            raise ValueError("User not found in DB")
     except ValueError as e:
         await websocket.close(code=1008)
         print(f"Connection rejected: {e}")
         return
 
-    await manager.connect(websocket, user.username)
-    await manager.broadcast(f"++ {user.username} joined the chat ++",websocket)
+    await manager.connect(websocket, user.full_name)
+    await manager.broadcast(f"++ {user.full_name} joined the chat ++",websocket)
     try:
         while True:
             data = await websocket.receive_text()
-            await manager.broadcast(f"{user.username}: {data}",websocket)
+            await manager.broadcast(f"{user.full_name}: {data}",websocket)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-        await manager.broadcast(f"-- {user.username} left the chat --",websocket)
+        await manager.broadcast(f"-- {user.full_name} left the chat --",websocket)
     except Exception as e:
         print(f"Unexpected error: {e}")
         await websocket.close(code=1011)
