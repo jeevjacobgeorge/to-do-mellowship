@@ -21,10 +21,10 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket):
         self.active_connections.pop(websocket, None)
 
-    async def broadcast(self, message: str):
+    async def broadcast(self, message: str,sender: WebSocket):
         for connection in self.active_connections:
             try:
-                await connection.send_text(message)
+                await connection.send_text(message) if connection != sender else None
             except Exception as e:
                 print(f"Error sending message: {e}")
 
@@ -57,14 +57,14 @@ async def websocket_endpoint(websocket: WebSocket):
         return
 
     await manager.connect(websocket, user.username)
-    await manager.broadcast(f"++ {user.username} joined the chat ++")
+    await manager.broadcast(f"++ {user.username} joined the chat ++",websocket)
     try:
         while True:
             data = await websocket.receive_text()
-            await manager.broadcast(f"{user.username}: {data}")
+            await manager.broadcast(f"{user.username}: {data}",websocket)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-        await manager.broadcast(f"-- {user.username} left the chat --")
+        await manager.broadcast(f"-- {user.username} left the chat --",websocket)
     except Exception as e:
         print(f"Unexpected error: {e}")
         await websocket.close(code=1011)
